@@ -1,6 +1,7 @@
-let eventHandler = () => {
-    gameFlow.turnAction();
-}
+let turnCount = 0;
+let gameStarted = false;
+let player1;
+let player2;
 
 let removeEventListeners = () => {
     for (i = 0; i < gameBoard.positions.length; i++) {
@@ -9,20 +10,47 @@ let removeEventListeners = () => {
 }}
 
 let createEventHandlers = () => {
-    console.log('create event handler ran');
     for (i = 0; i < gameBoard.positions.length; i++) {
         let position = 'pos' + i;
         let num = i;
         let pos = document.getElementById(position);
-
         pos.addEventListener('click', function _func() {
             gameFlow.turnAction(position, num);
         })
     }
 }
 
+const startResetGame = () => {
+    if(gameStarted === false) {  //Button shows Start Game
+        gameStarted = true;
+        player1Name = document.getElementById('player1Name').value;
+        player2Name = document.getElementById('player2Name').value;
+        createEventHandlers();
+        document.getElementById('startResetButton').innerHTML = 'Reset Game';
+        document.getElementById('player1Name').disabled = true;
+        document.getElementById('player2Name').disabled = true;
+
+        player1 = newPlayer(player1Name, 'x', true);
+        player2 = newPlayer(player2Name, 'o', false);
+    } else if (gameStarted === true) {  //Button shows Reset Game
+        gameStarted = false;
+        turnCount = 0;
+        removeEventListeners();
+        document.getElementById('player1Name').disabled = false;
+        document.getElementById('player2Name').disabled = false;
+        document.getElementById('startResetButton').innerHTML = 'Start Game';
+        document.getElementById('winnerBox').innerHTML = '';
+        gameBoard.positions = ['', '', '', '', '', '', '', '', ''];
+        for (i = 0; i < gameBoard.positions.length; i++) {
+            let position = 'pos' + i;
+            let pos = document.getElementById(position);
+            pos.innerHTML = '';
+        }
+    }
+}
+
 const gameBoard = (() => {
-    const positions = ['m', 'm', 'm', 'm', 'm', 'm', 'm', 'm', 'm'];
+    const positions = ['', '', '', '', '', '', '', '', ''];
     return {
         positions
     };
@@ -32,7 +60,6 @@ const gameBoard = (() => {
 
      const gameOver = () => {
          removeEventListeners();
-         console.log('the game is over!');
      }
 
     const nextTurn = () => {
@@ -46,19 +73,24 @@ const gameBoard = (() => {
     }
 
     const turnAction = (position, index) => {
-        if (document.getElementById(position).innerHTML === 'x' || document.getElementById(position).innerHTML === 'o') {
-            console.log('nope')
-        } else {
-            if (player1.active === true) {
-                document.getElementById(position).innerHTML = player1.symbol;
-                gameBoard.positions[index] = player1.symbol;
-            } else if (player2.active === true) {
-                document.getElementById(position).innerHTML = player2.symbol;
-                gameBoard.positions[index] = player2.symbol;
-            }
-            gameFlow.checkForWinner();
-            gameFlow.nextTurn();
-        }  
+            if (document.getElementById(position).innerHTML === 'x' || document.getElementById(position).innerHTML === 'o') {
+            } else {
+                turnCount++;
+                if (player1.active === true) {
+                    document.getElementById(position).innerHTML = player1.symbol;
+                    gameBoard.positions[index] = player1.symbol;
+                } else if (player2.active === true) {
+                    document.getElementById(position).innerHTML = player2.symbol;
+                    gameBoard.positions[index] = player2.symbol;
+                }
+                if (turnCount === 9) {
+                    removeEventListeners();
+                    document.getElementById('winnerBox').innerHTML = 'It is a tie!'
+                } else {
+                    gameFlow.checkForWinner();
+                    gameFlow.nextTurn();
+                }
+            }  
     }
 
     const checkForWinner = () => {
@@ -79,25 +111,25 @@ const gameBoard = (() => {
                 gameFlow.gameOver();
 
                 if (player1.active === true) {
-                    document.getElementById('winnerBox').innerHTML = 'Player 1 is the Winner!';
+                    player1.gameWinner();
                 } else {
-                    document.getElementById('winnerBox').innerHTML = 'Player 2 is the Winner!';
+                    player2.gameWinner();
                 }
             } 
         }
     }
-
     return {
         nextTurn, checkForWinner, turnAction, gameOver
     };
  })();
 
 const newPlayer = (name, symbol, active) => {
-    const sayHello = () => console.log('hello ' + name + '. ' + 'Your symbol is ' + symbol);
-    return { name, symbol, sayHello, active };
+    let gameWinner = () => {
+        document.getElementById('winnerBox').innerHTML = `${name} is the winner of the game.`;
+    }
+    return { name, symbol, active, gameWinner};
 };
 
-const player1 = newPlayer('rob', 'x', true );
-const player2 = newPlayer('joe', 'o', false );
+document.getElementById('startResetButton').addEventListener('click', startResetGame);
 
-createEventHandlers();
+
