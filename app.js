@@ -3,39 +3,43 @@ let gameStarted = false;
 let player1;
 let player2;
 
-let removeEventListeners = () => {
-    for (i = 0; i < gameBoard.positions.length; i++) {
-        let pos = document.getElementById('pos' + i);
-        pos.outerHTML = pos.outerHTML;    
-}}
-
-let createEventHandlers = () => {
-    for (i = 0; i < gameBoard.positions.length; i++) {
-        let position = 'pos' + i;
-        let num = i;
-        let pos = document.getElementById(position);
-        pos.addEventListener('click', function _func() {
-            gameFlow.turnAction(position, num);
-        })
+const eventHandling = (() => {
+    const createEventHandlers = () => {
+        for (i = 0; i < gameBoard.positions.length; i++) {
+            let position = 'pos' + i;
+            let num = i;
+            let pos = document.getElementById(position);
+            pos.addEventListener('click', function _func() {
+                gameFlow.turnAction(position, num);
+            })
+        }
     }
-}
+    const removeEventListeners = () => {
+        for (i = 0; i < gameBoard.positions.length; i++) {
+            let pos = document.getElementById('pos' + i);
+            pos.outerHTML = pos.outerHTML;
+        }
+    }
+    return { createEventHandlers, removeEventListeners };
+})();
 
 const startResetGame = () => {
-    if(gameStarted === false) {  //Button shows Start Game
+    if(gameStarted === false) {  //Button shows Start Game; clicking starts game
         gameStarted = true;
         player1Name = document.getElementById('player1Name').value;
         player2Name = document.getElementById('player2Name').value;
-        createEventHandlers();
+        eventHandling.createEventHandlers();
         document.getElementById('startResetButton').innerHTML = 'Reset Game';
         document.getElementById('player1Name').disabled = true;
         document.getElementById('player2Name').disabled = true;
-
         player1 = newPlayer(player1Name, 'x', true);
         player2 = newPlayer(player2Name, 'o', false);
-    } else if (gameStarted === true) {  //Button shows Reset Game
+        document.getElementById('winnerBox').innerHTML = `It is ${player1Name}'s turn.`;
+
+    } else if (gameStarted === true) {  //Button shows Reset Game; clicking resets game
         gameStarted = false;
         turnCount = 0;
-        removeEventListeners();
+        eventHandling.removeEventListeners();
         document.getElementById('player1Name').disabled = false;
         document.getElementById('player2Name').disabled = false;
         document.getElementById('startResetButton').innerHTML = 'Start Game';
@@ -57,18 +61,19 @@ const gameBoard = (() => {
 })();
 
  const gameFlow = (() => {
-
      const gameOver = () => {
-         removeEventListeners();
+         eventHandling.removeEventListeners();
      }
 
     const nextTurn = () => {
         if (player1.active === true) {
             player1.active = false;
             player2.active = true;
+            player2.turnReporter();
         } else if (player2.active === true) {
             player1.active = true;
             player2.active = false;
+            player1.turnReporter();
         }
     }
 
@@ -84,7 +89,7 @@ const gameBoard = (() => {
                     gameBoard.positions[index] = player2.symbol;
                 }
                 if (turnCount === 9) {
-                    removeEventListeners();
+                    eventHandling.removeEventListeners();
                     document.getElementById('winnerBox').innerHTML = 'It is a tie!'
                 } else {
                     gameFlow.checkForWinner();
@@ -107,13 +112,13 @@ const gameBoard = (() => {
 
         for (let i = 0; i < winnerArray.length; i++) {
             if (winnerArray[i] === 'xxx' || winnerArray[i] === 'ooo') {
-                console.log('we have a winner!')
                 gameFlow.gameOver();
-
                 if (player1.active === true) {
                     player1.gameWinner();
+                    player1.active = false;
                 } else {
                     player2.gameWinner();
+                    player2.active = false;
                 }
             } 
         }
@@ -125,9 +130,13 @@ const gameBoard = (() => {
 
 const newPlayer = (name, symbol, active) => {
     let gameWinner = () => {
+        console.log('gamewinner activated');
         document.getElementById('winnerBox').innerHTML = `${name} is the winner of the game.`;
     }
-    return { name, symbol, active, gameWinner};
+    let turnReporter = () => {
+        document.getElementById('winnerBox').innerHTML = `It is ${name}'s turn.`     
+    }
+    return { name, symbol, active, gameWinner, turnReporter};
 };
 
 document.getElementById('startResetButton').addEventListener('click', startResetGame);
