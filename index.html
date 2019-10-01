@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <h1>Tic Tac Toe</h1>
+        <div id='container'>
+            <table cellspacing="10">
+                <tr id='row1'>
+                    <td id='pos0'></td>
+                    <td class = 'vert' id='pos1'></td>
+                    <td id='pos2'></td>
+                </tr>
+                <tr id='row2'>
+                    <td class = 'hori' id='pos3'></td>
+                    <td class = 'vert hori' id='pos4'></td>
+                    <td class = 'hori' id='pos5'></td>
+                </tr>
+                <tr id='row3'>
+                    <td id='pos6'></td>
+                    <td class = 'vert' id='pos7'></td>
+                    <td id='pos8'></td>
+                </tr>
+            </table>
+        </div>
+        <h3><div id='winnerBox'></div></h3>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        
+        <script src="app.js" async defer></script>
+    </body>
+</html>
