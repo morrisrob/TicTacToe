@@ -6,3 +6,6 @@ Basic two player Tic Tac Toe game built in Javascript.
 Live: https://morrisrob.github.io/TicTacToe/
 
 Functionality: Allows entry of player names and tracks the winner of the game, including ties.  
+
+
+<img src="tictactoe.png" height="400">
